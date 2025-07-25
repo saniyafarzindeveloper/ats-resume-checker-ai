@@ -10,7 +10,11 @@ export const meta = () => [
 const Upload = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState("");
+  const [file, setFile] = useState<File | null>(null)
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {};
+  const handleFileSelect = (file: File | null) => {
+    setFile(file);
+  }
 
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
@@ -64,7 +68,7 @@ const Upload = () => {
 
               <div className="form-div">
                 <label htmlFor="uploader">Upload Resume</label>
-                <FileUploader />
+                <FileUploader onFileSelect={handleFileSelect} />
               </div>
 
               <button className="primary-button" type="submit">
