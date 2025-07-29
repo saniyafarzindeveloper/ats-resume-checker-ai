@@ -1,6 +1,9 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router";
 import FileUploader from "~/components/FileUploader";
 import Navbar from "~/components/Navbar";
+import { convertPdfToImage } from "~/lib/pdfToimage";
+import { usePuterStore } from "~/lib/puter";
 
 export const meta = () => [
   { title: "ResuChekr | Upload" },
@@ -8,13 +11,62 @@ export const meta = () => [
 ];
 
 const Upload = () => {
+
+  //puter store imports
+  const {auth, isLoading, fs, ai, kv} = usePuterStore(); //fs stands for file storage. kv stands for key value pairs storage
+
+  //navigate
+  const navigate = useNavigate();
+
+
+  //states -  START
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState("");
-  const [file, setFile] = useState<File | null>(null)
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {};
+  const [file, setFile] = useState<File | null>(null);
+
+  //functions - START
+
+  //Resume upload analysis function matched against company name, title, description
+  const handleAnalyse = async ({
+    file,
+    companyName,
+    jobDescription,
+    jobTitle,
+  }: {
+    companyName: string;
+    jobDescription: string;
+    jobTitle: string;
+    file: File;
+  }) => {
+    setIsProcessing(true);
+    setStatusText('Uploading the file. Please wait....');
+    const uploadedFile = await fs.upload([file]);
+    if(!uploadedFile) return setStatusText("Error: Failed to upload file. Please try again....")
+      setStatusText('Converting to image. Hold on...');
+    const imageFile = await convertPdfToImage(file)
+  };
+
+  //submitting the response for analysis function
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget.closest("form"); //getting form data w/o relying on the state
+    if (!form) return;
+    const formData = new FormData(form);
+    const companyName = formData.get("company-name") as string;
+    const jobTitle = formData.get("job-title") as string;
+    const jobDescription = formData.get("job-description") as string;
+    if (!file) return; //if no file is uploaded, simply return
+    handleAnalyse({ file, companyName, jobDescription, jobTitle });
+    console.log({
+      file,
+      companyName,
+      jobDescription,
+      jobTitle,
+    });
+  };
   const handleFileSelect = (file: File | null) => {
     setFile(file);
-  }
+  };
 
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
