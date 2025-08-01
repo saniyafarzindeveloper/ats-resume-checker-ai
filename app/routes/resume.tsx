@@ -12,13 +12,16 @@ const Resume = () => {
   const { id } = useParams();
   console.log("ID", id);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
+  }, [auth.isAuthenticated]);
+
   //states
   const [imageUrl, setImageUrl] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
   const [feedback, setFeedback] = useState("");
-
-  //navigaion
-  const navigate = useNavigate();
 
   useEffect(() => {
     const loadResume = async () => {
@@ -63,10 +66,20 @@ const Resume = () => {
           {imageUrl && resumeUrl && (
             <div className="animate-in fade-in duration-1000 gradient-border max-sm:m-0 h-[90%] max-xl:h-fit w-fit">
               <a href={imageUrl} target="_blank" rel="noopener noreferrer">
-               <iframe src={resumeUrl} className="w-[500px] h-[600px]" />
-
+                <iframe src={resumeUrl} className="w-[500px] h-[600px]" />
               </a>
             </div>
+          )}
+        </section>
+
+        <section className="feedback-section">
+          <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
+          {feedback ? (
+            <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
+              ATS Summary Details
+            </div>
+          ) : (
+            <img src="/images/resume-scan-2.gif" className="w-full" />
           )}
         </section>
       </div>
