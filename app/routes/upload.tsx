@@ -130,7 +130,6 @@ const Upload = () => {
               <div className="form-div">
                 <label htmlFor="company-name">Company Name</label>
                 <input
-                  required
                   type="text"
                   placeholder="Company Name"
                   name="company-name"
@@ -141,7 +140,6 @@ const Upload = () => {
               <div className="form-div">
                 <label htmlFor="job-title">Job Title</label>
                 <input
-                  required
                   type="text"
                   placeholder="Job title"
                   name="job-title"
@@ -152,7 +150,6 @@ const Upload = () => {
               <div className="form-div">
                 <label htmlFor="job-description">Job Description</label>
                 <textarea
-                  required
                   rows={6}
                   placeholder="Job Description"
                   name="job-description"
