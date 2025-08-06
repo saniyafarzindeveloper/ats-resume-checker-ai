@@ -9,16 +9,27 @@ const ResumeCard = ({
   resume: Resume;
 }) => {
   const [resumeUrl, setResumeUrl] = useState("");
-  const { fs } = usePuterStore();
+  // const { fs } = usePuterStore();
+  const { fs, auth } = usePuterStore();
+
   useEffect(() => {
     const loadResume = async () => {
-      const blob = await fs.read(imagePath);
-      if (!blob) return;
-      let url = URL.createObjectURL(blob);
-      setResumeUrl(url);
+      if (!auth.isAuthenticated) return;
+
+      try {
+        const blob = await fs.read(imagePath);
+        console.log("imagePath", imagePath);
+        if (!blob) throw new Error("Resume blob not found");
+        const url = URL.createObjectURL(blob);
+        setResumeUrl(url);
+      } catch (err) {
+        console.error("Error fetching resume PDF:", err);
+      }
     };
+
     loadResume();
-  }, [imagePath]);
+  }, [imagePath, auth.isAuthenticated]);
+
   return (
     <Link
       to={`/resume/${id}`}
